@@ -4,9 +4,7 @@ i3 and KDE Plasma
 
 How to install the i3 window manager on KDE Plasma
 
-Preview image (every screenshot needs screenfetch haha)
 
-screenshot of my current setup
 Situation before installation
 
     Manjaro KDE Edition, all updates installed
@@ -19,15 +17,17 @@ Packages
 We're gonna install a couple packages that are required or nice-to-haves on i3. This consists of:
 
     i3-gaps, obviously
-    feh to set up the background
-    dmenu (not required)
+    nitrogen
+    rofi(optional)
     morc_menu (not required)
     i3-status for the status bar of i3
-    wmctrl to add to the i3 config (if you're not on an English installation of Plasma)
 
 and their dependencies.
 
-Here's how I installed everything: $ sudo pacman -S i3-gaps feh i3-dmenu-desktop morc_menu i3-status wmctrl
+Use this command to install all of this
+
+`$ sudo pacman -S i3-gaps nitrogen i3-dmenu-desktop morc_menu i3-status`
+
 Configuration
 Create a new XSession
 
@@ -69,33 +69,13 @@ for_window [class="(?i)*nextcloud*"] floating disable
 for_window [class="plasmashell" window_type="notification"] border none, move right 700px, move down 450px
 no_focus [class="plasmashell" window_type="notification"]
 
+Or you can copy my i3 config with these patches.
+
 Killing the existing window that covers everything
 
 Now with my installation, there was a Plasma Desktop window that covered everything and had to be closed with $mod+Shift+q every time I logged in. To circumvent that, follow this tutorial.
-English Plasma installation
 
-If you're on an English installation of Plasma, add this line to your i3 config: for_window [title="Desktop — Plasma"] kill; floating enable; border none
-Non-English Plasma installation
-
-If you're not on an English installation, do this instead. This example is using the German Plasma installation.
-Find out the name of your Plasma desktop
-
-Directly after logging into your i3 environment, switch to a new workspace with $mod+2.Then enter the following in your terminal:
-
-$ wmctrl -l
-
-The output should contain the name of the plasma desktop window.
-
-...
-0x04400006  0 alex-mi Arbeitsfläche — Plasma
-...
-
-Set it in the i3 config
-
-Using this new-found information, add the following lines to your i3 config:
-
-for_window [title="Desktop — Plasma"] kill; floating enable; border none
-for_window [title="Arbeitsfläche — Plasma"] kill; floating enable; border none
+Add this line to your i3 config: for_window [title="Desktop — Plasma"] kill; floating enable; border none
 
 Disabling a shortcut that breaks stuff
 
@@ -124,17 +104,8 @@ exec --no-startup-id feh --bg-scale /usr/share/plasma/look-and-feel/org.manjaro.
 Editing the bar (optional)
 
 The i3 bar has a nice feature that allows it to be hidden, unless you press $mod. I enabled this, because I have the Plasma status bar.
+You can take a look at my i3 config for this.
 
-This is a my bar config. It sets the command that should be called to get the current system status, makes it a bit larger and a bit less black. To use the i3 bar instead of the plasma one, you should be able to just remove it with your mouse (navigate through the right click menus of the bar).
-
-bar {
-    status_command i3status
-    mode hide
-    height 30
-    colors {
-      background #242424
-    }
-}
 
 That's it! I hope this little tutorial helped you, and if you see anything you'd like to improve, absolutely feel free to do so!
 Enable transparency (optional)
@@ -146,54 +117,5 @@ Then, add this line to your i3 config: exec_always --no-startup-id picom -bc
 The result is something like this:
 
 screenshot of my setup with transparency enabled
-Dual Kawase and blur (optional)
 
-This was a bit more tricky to do. Instead of the normal picom from my repository, I used a fork called picom-tryone-git to replace my existing picom.
-
-To configure picom, I copied /etc/xdg/picom.conf.example to ~/.config/picom.conf. Picom should already pick up this config. There are a couple of things you need to change.
-
-My changes were:
-
-...
-shadow = true;
-shadow-radius = 12;
-...
-shadow-opacity = 1;
-shadow-red = 0.0;
-shadow-green = 0.0;
-shadow-blue = 0.0;
-...
-# inactive opacity = 1;
-...
-frame_opacity = 1;
-...
-fading = false;
-...
-backend = "glx";
-...
-blur:
-{
-method = "dual_kawase";
-size = 25;
-deviation = 5.0;
-}
-
-Make sure the blur section is on the bottom of the file.
-
-To s
-
-tart picom in a way that supports kawase blur, replace the line in your i3 config that starts picom with this one:
-
-exec --no-startup-id picom --backend glx --experimental-backends -bc
-
-The result can look something like this:
-
-with blur and looking good
-About
-
-How to install the i3 window manager on KDE
-Topics
-i3wm i3-gaps i3 kde plasma
-Resources
-Readme
-License
+Thank you !
