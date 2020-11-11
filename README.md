@@ -1,60 +1,61 @@
 # Plasma-i3_DE
 
-i3 and KDE Plasma
+!! Hello !!\
+Here I'll be describing how you can setup your Plasma Desktop Environment with i3 as the Window Manager.
 
-How to install the i3 window manager on KDE Plasma
+## Screenshots
+...
 
+## Installation Packages
 
-Situation before installation
-
-    Manjaro KDE Edition, all updates installed
-    KDE plasma
-    KWin
-
-Installation
-Packages
-
-We're gonna install a couple packages that are required or nice-to-haves on i3. This consists of:
+We're gonna install a couple packages that are required or nice-to-haves on i3. This consists of:\
 
     i3-gaps, obviously
+    i3-status
     nitrogen
     rofi(optional)
-    morc_menu (not required)
-    i3-status for the status bar of i3
+    
+and their dependencies.\
+Use this command to install all of this\
 
-and their dependencies.
+#### pacman:
+` sudo pacman -Syu i3-gaps nitrogen i3-dmenu-desktop i3-status rofi`
 
-Use this command to install all of this
+#### apt:
+` sudo apt-get update && sudo apt-get install i3-gaps nitrogen i3-dmenu-desktop i3-status rofi`
 
-`$ sudo pacman -S i3-gaps nitrogen i3-dmenu-desktop morc_menu i3-status`
+#### zypper:
+` sudo zypper in i3-gaps nitrogen i3-dmenu-desktop i3-status rofi`
 
-Configuration
-Create a new XSession
 
-Create a new file called plasma-i3.desktop in the /usr/share/xsessions directory as su. [1]
+## Configuration
+1. Create a new XSession in /usr/share/xsessions as su.\
+`sudo touch /usr/share/xsessions/plasma-i3.desktop`\
+Now we have to add these into the plasma-i3.desktop file:\
+Using nano you can proceed like:\
+` sudo nano /usr/share/xsessions/plasma-i3.desktop`\
+Now paste these into the file:\
+`[Desktop Entry]\
+Type=XSession\
+Exec=env KDEWM=/usr/bin/i3 /usr/bin/startplasma-x11\
+DesktopNames=KDE\
+Name=Plasma with i3\
+Comment=Plasma with i3`\
 
-Write the following into /usr/share/xsessions/plasma-i3.desktop:
+2. The i3 installation could have installed other .desktop files, you can remove them if you'd like. Only leave the default plasma.dektop and plasma-i3.desktop in folder if want.
 
-[Desktop Entry]
-Type=XSession
-Exec=env KDEWM=/usr/bin/i3 /usr/bin/startplasma-x11
-DesktopNames=KDE
-Name=Plasma with i3
-Comment=Plasma with i3
+3. For the config use your existing i3 config or create a new config or use my i3 config using this command. (this also works when you're still in KDE).
+`$ i3-config-wizard` 
+i3 config should be located at ~/.config/i3/config, although other locations are possible.
 
-The i3 installation could have installed other .desktop files, you can remove them if you'd like. I only have the default plasma.dektop and plasma-i3.desktop in my folder.
-
-For the following use your existing i3 config or create a new config using $ i3-config-wizard (this also works when you're still in KWin).
-
-Your i3 config should be located at ~/.config/i3/config, although other locations are possible.
-Adding stuff to the i3 config
-
-To improve compatibility with Plasma, add the following lines in your i3 config. [1]
+4. Adding stuff to the i3 config
+To improve compatibility with Plasma, we need to add some lines in the i3 config Or you can copy my i3 config with these patches.
+Add the following lines in your i3 config. [1]
 
 # Plasma compatibility improvements
 for_window [window_role="pop-up"] floating enable
 for_window [window_role="task_dialog"] floating enable
-
+`
 for_window [class="yakuake"] floating enable
 for_window [class="systemsettings"] floating enable
 for_window [class="plasmashell"] floating enable;
@@ -68,54 +69,37 @@ for_window [class="Plasmoidviewer"] floating enable; border none
 for_window [class="(?i)*nextcloud*"] floating disable
 for_window [class="plasmashell" window_type="notification"] border none, move right 700px, move down 450px
 no_focus [class="plasmashell" window_type="notification"]
+# below one needed to kill the existing window that covers everything
+for_window [title="Desktop — Plasma"] kill; floating enable; border none
 
-Or you can copy my i3 config with these patches.
+`
+5. Disabling shortcuts that breaks stuff
+Launch the Plasma System Settings and go to Workspace > Shortcuts > Global Shortcuts > Plasma and disable the shortcut "Activities" that uses the combination Meta+Q. also I'll recommend to disable other shortcuts using Meta key.
 
-Killing the existing window that covers everything
-
-Now with my installation, there was a Plasma Desktop window that covered everything and had to be closed with $mod+Shift+q every time I logged in. To circumvent that, follow this tutorial.
-
-Add this line to your i3 config: for_window [title="Desktop — Plasma"] kill; floating enable; border none
-
-Disabling a shortcut that breaks stuff
-
-Launch the Plasma System Settings and go to Workspace > Shortcuts > Global Shortcuts > Plasma and disable the shortcut "Activities" that uses the combination Meta+Q.
-Using the plasma shutdown screen
-
-To use the plasma shutdown/logout/reboot screen, delete this line (or comment out) [2]
-
-$bindsym $mod+Shift+e exec "i3-nagbar " ...
-
+6. Using the plasma shutdown screen
+To use the plasma shutdown/logout/reboot screen, delete this line (or comment out)
+`$bindsym $mod+Shift+e exec "i3-nagbar " ...`
 and add the following one(s) instead:
 
-# using plasma's logout screen instead of i3's
-bindsym $mod+Shift+e exec --no-startup-id qdbus org.kde.ksmserver /KSMServer org.kde.KSMServerInterface.logout -1 -1 -1
+`# using plasma's logout screen instead of i3's
+bindsym $mod+Shift+e exec --no-startup-id qdbus org.kde.ksmserver /KSMServer org.kde.KSMServerInterface.logout -1 -1 -1`
 
-Setting the Background (optional)
+**Now you can sign in i3**
 
-By default, i3 doesn't set a background and it requires a third party to do that. I am using the default background provided by the Plasma theme with the name of "Andromeda".
 
-I installed these following packages: $ sudo pacman -S andromeda-wallpaper plasma5-themes-andromeda sddm-andromeda-theme andromeda-icon-theme and enabled everything up in the Plasma settings.
+7.Editing the bar (optional)
 
-To set up the same wallpaper in i3, add the following line to the i3 config:
+The i3 bar has a nice feature that allows it to be hidden, unless you press $mod. I enabled this, because I have the Plasma status bar. (Again this is done in my config)
+`
+bar{
+    mode hide
+}
+`
 
-exec --no-startup-id feh --bg-scale /usr/share/plasma/look-and-feel/org.manjaro.andromeda.desktop/contents/components/artwork/background.png
+8. Setting the Background (optional)
+By default, i3 doesn't set a background so we will use nitrogen.
 
-Editing the bar (optional)
-
-The i3 bar has a nice feature that allows it to be hidden, unless you press $mod. I enabled this, because I have the Plasma status bar.
-You can take a look at my i3 config for this.
 
 
 That's it! I hope this little tutorial helped you, and if you see anything you'd like to improve, absolutely feel free to do so!
-Enable transparency (optional)
-
-If you'd like to enable transparency, you need to install a compositor. I use picom, and it works really well with minimal (no) configuration. First, install picom: $ sudo pacman -S picom
-
-Then, add this line to your i3 config: exec_always --no-startup-id picom -bc
-
-The result is something like this:
-
-screenshot of my setup with transparency enabled
-
 Thank you !
